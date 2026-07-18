@@ -1,0 +1,176 @@
+{
+  "name": "filtrera",
+  "scopeName": "source.filtrera",
+  "patterns": [
+    {
+      "name": "comment.line.double-slash.filtrera",
+      "match": "//.*$"
+    },
+    {
+      "name": "comment.block.filtrera",
+      "begin": "/\\*",
+      "end": "\\*/"
+    },
+    {
+      "name": "keyword.control.filtrera",
+      "match": "\\b(from|let|param|import|export)\\b"
+    },
+    {
+      "name": "keyword.logical.filtrera",
+      "match": "\\b(and|or|not)\\b"
+    },
+    {
+      "name": "string.quoted.filtrera",
+      "begin": "'",
+      "end": "'",
+      "patterns": [
+        {
+          "name": "constant.character.escape.apostrophe.filtrera",
+          "match": "''"
+        }
+      ]
+    },
+    {
+      "include": "#interpolated-string-1"
+    },
+    {
+      "include": "#interpolated-string-2"
+    },
+    {
+      "include": "#interpolated-string-3"
+    },
+    {
+      "name": "string.regexp.literal.filtrera",
+      "match": "/(?:[^/\\\\]|\\\\.)*/[rims]*"
+    },
+    {
+      "name": "variable.filtrera",
+      "match": "`.*?`"
+    }
+  ],
+  "repository": {
+    "interpolated-string-1": {
+      "begin": "\\$'",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.filtrera"
+        }
+      },
+      "end": "'",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.filtrera"
+        }
+      },
+      "name": "string.interpolated.single-dollar.filtrera",
+      "patterns": [
+        {
+          "name": "constant.character.escape.apostrophe.filtrera",
+          "match": "''"
+        },
+        {
+          "begin": "\\{",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.begin.filtrera"
+            }
+          },
+          "end": "\\}",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.end.filtrera"
+            }
+          },
+          "name": "source.filtrera.embedded",
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      ]
+    },
+    "interpolated-string-2": {
+      "begin": "\\$\\$'",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.filtrera"
+        }
+      },
+      "end": "'",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.filtrera"
+        }
+      },
+      "name": "string.interpolated.double-dollar.filtrera",
+      "patterns": [
+        {
+          "name": "constant.character.escape.apostrophe.filtrera",
+          "match": "''"
+        },
+        {
+          "begin": "\\{\\{",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.begin.filtrera"
+            }
+          },
+          "end": "\\}\\}",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.end.filtrera"
+            }
+          },
+          "name": "source.filtrera.embedded",
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      ]
+    },
+    "interpolated-string-3": {
+      "begin": "\\$\\$\\$'",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.begin.filtrera"
+        }
+      },
+      "end": "'",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.string.end.filtrera"
+        }
+      },
+      "name": "string.interpolated.triple-dollar.filtrera",
+      "patterns": [
+        {
+          "name": "constant.character.escape.apostrophe.filtrera",
+          "match": "''"
+        },
+        {
+          "begin": "\\{\\{\\{",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.begin.filtrera"
+            }
+          },
+          "end": "\\}\\}\\}",
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.section.embedded.end.filtrera"
+            }
+          },
+          "name": "source.filtrera.embedded",
+          "patterns": [
+            {
+              "include": "$self"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}
