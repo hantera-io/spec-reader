@@ -1,0 +1,55 @@
+name: Publish to npm
+
+# Publishes @hantera/spec-reader to npmjs.org when a version tag is pushed.
+#
+# Only strict SemVer tags trigger a publish, e.g. "v1.0.0". Tags such as
+# "v1.0" or "v1.0.0-beta.1" are intentionally ignored.
+#
+# Requires an NPM_TOKEN secret (an npm access token with publish rights for
+# the @hantera scope) in the repository's Actions secrets.
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish @hantera/spec-reader
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org/
+          cache: yarn
+
+      - name: Verify the tag matches package.json
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION="$(node --print "require('./package.json').version")"
+          echo "Tag: v${TAG_VERSION}, package.json: ${PKG_VERSION}"
+          if [ "${TAG_VERSION}" != "${PKG_VERSION}" ]; then
+            echo "::error::Tag ${GITHUB_REF_NAME} does not match package.json version ${PKG_VERSION}. Bump package.json before tagging."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        # Yarn 1 (yarn.lock v1). If the repo ever moves to Yarn 2+, switch
+        # this flag to --immutable.
+        run: yarn install --frozen-lockfile
+
+      - name: Verify the package that will be published
+        run: npm pack --dry-run
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public

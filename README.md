@@ -65,6 +65,21 @@ live.
   directory with chokidar for HMR.
 - A Vue frontend renders the tree and the markdown document.
 
+## Releasing
+
+1. Bump `version` in `package.json` (for example `1.0.0`).
+2. Commit the change and tag it: `git tag v1.0.0` — the tag must match the
+   `package.json` version exactly.
+3. Push with `git push origin main --tags`.
+
+Pushing a `vX.Y.Z` tag triggers
+[`.github/workflows/publish-npm.yml`](.github/workflows/publish-npm.yml), which
+installs dependencies, verifies the package, and publishes
+`@hantera/spec-reader` to
+[npm](https://www.npmjs.com/package/@hantera/spec-reader) using the `NPM_TOKEN`
+repository secret. Tags that are not strict `vX.Y.Z` (such as `v1.0` or
+`v1.0.0-beta.1`) are ignored.
+
 ## License
 
 [Apache 2.0](LICENSE)
