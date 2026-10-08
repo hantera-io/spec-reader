@@ -24,12 +24,21 @@ jobs:
       - name: Check out the tagged commit
         uses: actions/checkout@v7
 
+      # Activates the Yarn version pinned in packageManager (Yarn 4). Must run
+      # before any yarn command: the runner's default Yarn 1 crashes on the
+      # ${NODE_AUTH_TOKEN} placeholder that setup-node's registry-url writes
+      # into ~/.npmrc. Yarn 4 never reads .npmrc; npm handles auth at publish.
+      - name: Enable Corepack (Yarn 4)
+        run: corepack enable
+
       - name: Set up Node.js 22
         uses: actions/setup-node@v7
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org/
-          cache: yarn
+          # No dependency caching: setup-node's Yarn probe (`yarn cache dir`)
+          # does not exist in Yarn 4, and the Berry cache is global anyway.
+          package-manager-cache: false
 
       - name: Verify the tag matches package.json
         run: |
@@ -42,9 +51,9 @@ jobs:
           fi
 
       - name: Install dependencies
-        # Yarn 1 (yarn.lock v1). If the repo ever moves to Yarn 2+, switch
-        # this flag to --immutable.
-        run: yarn install --frozen-lockfile
+        # Yarn 4 (Berry): --immutable is the equivalent of Yarn 1's
+        # --frozen-lockfile.
+        run: yarn install --immutable
 
       - name: Verify the package that will be published
         run: npm pack --dry-run
