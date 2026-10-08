@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { inject } from "vue";
 import type { TreeNode } from "../api";
+import { TREE_EXPANSION, type TreeExpansionStore } from "../tree-state";
 
 const props = defineProps<{
   nodes: TreeNode[];
@@ -12,25 +13,31 @@ const emit = defineEmits<{
   (event: "select", path: string): void;
 }>();
 
-const collapsed = ref<Record<string, boolean>>({});
+/**
+ * Used when the tree is rendered without a provided store (e.g. outside the
+ * app): everything stays collapsed and nothing is remembered.
+ */
+const detachedStore: TreeExpansionStore = {
+  init() {},
+  isExpanded() {
+    return false;
+  },
+  toggle() {},
+  revealPath() {},
+};
 
-function toggle(path: string) {
-  collapsed.value[path] = !collapsed.value[path];
-}
-
-function isCollapsed(path: string): boolean {
-  return collapsed.value[path] === true;
-}
+// Directories are collapsed by default; the app provides the shared store.
+const expansion = inject(TREE_EXPANSION, detachedStore);
 </script>
 
 <template>
   <div class="tree-item" v-for="node in nodes" :key="node.path">
     <template v-if="node.type === 'dir'">
-      <div class="tree-row" @click="toggle(node.path)">
-        <span class="tree-icon">{{ isCollapsed(node.path) ? "▸" : "▾" }}</span>
+      <div class="tree-row" @click="expansion.toggle(node.path)">
+        <span class="tree-icon">{{ expansion.isExpanded(node.path) ? "▾" : "▸" }}</span>
         <span>{{ node.name }}</span>
       </div>
-      <div v-show="!isCollapsed(node.path)" class="tree-children">
+      <div v-show="expansion.isExpanded(node.path)" class="tree-children">
         <FileTree
           :nodes="node.children ?? []"
           :active-path="activePath"

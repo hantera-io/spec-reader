@@ -55,6 +55,10 @@ live.
   shareable and refresh-safe.
 - **Hot reload** — file changes push over Vite's websocket; the tree refreshes
   on add/remove, the current document refreshes on change.
+- **Collapsed tree** — folders start collapsed and the tree auto-expands to
+  reveal the open document. Expansion is remembered per content root in
+  `sessionStorage`, so two spec-readers on different folders never share tree
+  state.
 
 ## How it works
 

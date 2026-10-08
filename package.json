@@ -1,7 +1,7 @@
 {
   "name": "@hantera/spec-reader",
-  "version": "0.0.0",
-  "description": "Dead-simple markdown spec reader with light/dark theme, mermaid and Filtrera syntax highlighting.",
+  "version": "1.0.0",
+  "description": "Dead-simple markdown spec reader with light/dark theme, mermaid, grafiq and Filtrera syntax highlighting.",
   "type": "module",
   "scripts": {
     "start": "node ./bin/sr.js",

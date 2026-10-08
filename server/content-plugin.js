@@ -80,6 +80,9 @@ export function contentPlugin({ target, mode, contentRoot }) {
         sendJson(res, 200, {
           mode,
           rootName: basename(root),
+          // Absolute posix path of the content root. Used by the frontend to
+          // scope persisted UI state (e.g. tree expansion) per root folder.
+          rootPath: toPosix(root),
           file: mode === "file" ? toPosix(relative(root, resolve(target))) : null,
         });
       });

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick } from "vue";
+import { ref, onMounted, computed, nextTick, provide } from "vue";
 import FileTree from "./components/FileTree.vue";
 import MarkdownView from "./components/MarkdownView.vue";
 import { theme, toggleTheme } from "./theme";
@@ -10,12 +10,17 @@ import {
   type AppConfig,
   type TreeNode,
 } from "./api";
+import { createTreeExpansionStore, TREE_EXPANSION } from "./tree-state";
 
 const config = ref<AppConfig | null>(null);
 const tree = ref<TreeNode[]>([]);
 const currentPath = ref<string | null>(null);
 const source = ref("");
 const error = ref<string | null>(null);
+
+// Shared tree-expansion state, provided to the recursive FileTree components.
+const expansion = createTreeExpansionStore();
+provide(TREE_EXPANSION, expansion);
 
 const isFolderMode = computed(() => config.value?.mode === "folder");
 
@@ -47,6 +52,7 @@ async function load(path: string, anchor?: string | null) {
     error.value = null;
     source.value = await fetchFile(path);
     currentPath.value = path;
+    expansion.revealPath(path);
     await nextTick();
     if (anchor) {
       document.getElementById(anchor)?.scrollIntoView();
@@ -75,19 +81,24 @@ async function refreshTree() {
 }
 
 onMounted(async () => {
+  let cfg: AppConfig;
   try {
-    config.value = await fetchConfig();
+    cfg = await fetchConfig();
+    config.value = cfg;
   } catch (e) {
     error.value = String(e);
     return;
   }
 
-  if (isFolderMode.value) {
+  if (cfg.mode === "folder") {
+    // Scope remembered tree expansion to this content root so that two
+    // spec-reader instances on different folders never share state.
+    expansion.init(cfg.rootPath);
     await refreshTree();
     const initial = pathFromHash() ?? firstFile(tree.value);
     if (initial) await load(initial, anchorFromHash());
-  } else if (config.value?.file) {
-    await load(config.value.file);
+  } else if (cfg.file) {
+    await load(cfg.file);
   }
 
   window.addEventListener("hashchange", () => {

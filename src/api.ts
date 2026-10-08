@@ -3,6 +3,8 @@ export type Mode = "file" | "folder";
 export interface AppConfig {
   mode: Mode;
   rootName: string;
+  /** Absolute posix path of the content root; scopes persisted UI state. */
+  rootPath: string;
   file: string | null;
 }
 
