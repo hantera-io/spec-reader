@@ -21,8 +21,7 @@ flowchart LR
   J --> K[Emit applyCommands]
 ```
 
-Hover a diagram and click the ⛶ button (top-right) to open it full screen with
-zoom and pan.
+Click a diagram to open it full screen with zoom and pan.
 
 ## Grafiq mockup
 

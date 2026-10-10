@@ -44,9 +44,9 @@ live.
   to `localStorage`.
 - **Markdown** — headings with anchor links, tables, blockquotes, task lists.
 - **Mermaid** — ` ```mermaid ` fenced blocks render as diagrams using the **ELK**
-  layout engine by default, re-theming with the app. Hover a diagram and click
-  the ⛶ button to open it full screen with zoom (wheel or +/−) and drag-to-pan;
-  close with ✕ or Esc.
+  layout engine by default, re-theming with the app. Click a diagram to open
+  it full screen with zoom (wheel or +/−) and drag-to-pan; close with ✕ or
+  Esc.
 
 - **Syntax highlighting** — powered by [Shiki](https://shiki.style). Common
   languages are bundled, plus the Filtrera grammar for ` ```filtrera ` blocks.

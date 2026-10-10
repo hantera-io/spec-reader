@@ -341,32 +341,7 @@ body {
   background: var(--code-bg);
   border: 1px solid var(--code-border);
   border-radius: 8px;
-}
-
-.markdown-body .diagram-expand {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 30px;
-  height: 30px;
-  border: 1px solid var(--border);
-  background: var(--bg-elevated);
-  color: var(--text-muted);
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 15px;
-  line-height: 1;
-  opacity: 0;
-  transition: opacity 0.12s ease;
-}
-
-.markdown-body .mermaid:hover .diagram-expand {
-  opacity: 1;
-}
-
-.markdown-body .diagram-expand:hover {
-  color: var(--text);
-  border-color: var(--accent);
+  cursor: zoom-in;
 }
 
 .lightbox-backdrop {

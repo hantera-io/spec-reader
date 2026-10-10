@@ -14,6 +14,7 @@ const emit = defineEmits<{
 const stage = ref<HTMLElement | null>(null);
 const canvas = ref<HTMLElement | null>(null);
 let instance: PanZoom | null = null;
+let lastSize = { width: 0, height: 0 };
 
 function dispose() {
   instance?.dispose();
@@ -24,7 +25,11 @@ async function open(source: string) {
   await nextTick();
   if (!canvas.value || !stage.value) return;
 
-  canvas.value.innerHTML = await renderDiagram(source, "lightbox");
+  try {
+    canvas.value.innerHTML = await renderDiagram(source, "lightbox");
+  } catch (error) {
+    canvas.value.innerHTML = `<pre class="error-state">${String(error)}</pre>`;
+  }
 
   const svg = canvas.value.querySelector("svg");
   let width = 0;
@@ -40,6 +45,8 @@ async function open(source: string) {
     svg.style.maxWidth = "none";
     svg.style.maxHeight = "none";
   }
+
+  lastSize = { width, height };
 
   dispose();
   instance = panzoom(canvas.value, {
@@ -76,10 +83,8 @@ function zoomBy(factor: number) {
   instance.smoothZoom(rect.width / 2, rect.height / 2, factor);
 }
 
-function reset() {
-  if (!instance) return;
-  instance.moveTo(0, 0);
-  instance.zoomAbs(0, 0, 1);
+function fit() {
+  fitToStage(lastSize.width, lastSize.height);
 }
 
 function onKey(event: KeyboardEvent) {
@@ -113,7 +118,7 @@ onBeforeUnmount(() => {
     <div class="lightbox-controls">
       <button title="Zoom in" @click="zoomBy(1.3)">+</button>
       <button title="Zoom out" @click="zoomBy(0.77)">−</button>
-      <button title="Reset" @click="reset">⟲</button>
+      <button title="Fit to screen" @click="fit">⟲</button>
       <button title="Close (Esc)" @click="emit('close')">✕</button>
     </div>
   </div>

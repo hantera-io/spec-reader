@@ -69,11 +69,6 @@ async function getMarkdownIt(): Promise<MarkdownIt> {
     typographer: true,
     highlight(code, lang) {
       const language = (lang || "").toLowerCase();
-
-      if (language === "mermaid") {
-        return `<div class="mermaid">${escapeHtml(code)}</div>`;
-      }
-
       const effective = loaded.has(language) ? language : "text";
       if (effective === "text") {
         return `<pre class="shiki-plain"><code>${escapeHtml(code)}</code></pre>`;
@@ -91,6 +86,23 @@ async function getMarkdownIt(): Promise<MarkdownIt> {
       permalink: anchor.permalink.headerLink(),
     })
     .use(grafiq);
+
+  // Mermaid fences must render as a bare `<div class="mermaid">` host, without
+  // the `<pre><code class="language-mermaid">` wrapper the default fence rule
+  // puts around non-`<pre>` highlight output — that wrapper double-frames the
+  // diagram. Render mermaid ourselves and chain every other fence language to
+  // the previous rule (the grafiq plugin's wrapper, which falls back to the
+  // default rule and the Shiki highlight). This must be installed after
+  // `.use(grafiq)` so it takes precedence.
+  const previousFence = md.renderer.rules.fence!;
+  md.renderer.rules.fence = (tokens, idx, options, env, self) => {
+    const token = tokens[idx];
+    const language = (token.info || "").trim().split(/\s+/)[0].toLowerCase();
+    if (language === "mermaid") {
+      return `<div class="mermaid">${escapeHtml(token.content)}</div>\n`;
+    }
+    return previousFence(tokens, idx, options, env, self);
+  };
 
   return md;
 }

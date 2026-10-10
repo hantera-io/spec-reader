@@ -36,16 +36,18 @@ function resolveRelative(from: string, href: string): string {
 function onClick(event: MouseEvent) {
   const target = event.target as HTMLElement;
 
-  const expand = target.closest<HTMLElement>(".diagram-expand");
-  if (expand) {
-    event.preventDefault();
-    const host = expand.closest<HTMLElement>(".mermaid");
-    if (host?.dataset.source) lightboxSource.value = host.dataset.source;
+  const anchor = target.closest("a");
+  if (!anchor) {
+    // Clicking anywhere on a diagram opens it full screen. Links inside the
+    // SVG (e.g. mermaid node hyperlinks) skip this and are handled below.
+    if (event.button !== 0) return;
+    const host = target.closest<HTMLElement>(".mermaid");
+    if (host?.dataset.source) {
+      event.preventDefault();
+      lightboxSource.value = host.dataset.source;
+    }
     return;
   }
-
-  const anchor = target.closest("a");
-  if (!anchor) return;
 
   const href = anchor.getAttribute("href");
   if (!href) return;
@@ -110,11 +112,6 @@ async function renderMermaid() {
     node.dataset.source = source;
     try {
       node.innerHTML = await renderDiagram(source);
-      const button = document.createElement("button");
-      button.className = "diagram-expand";
-      button.title = "Open full screen";
-      button.textContent = "⛶";
-      node.appendChild(button);
     } catch (error) {
       node.innerHTML = `<pre class="error-state">${String(error)}</pre>`;
     }
