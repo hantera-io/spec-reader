@@ -33,7 +33,7 @@ sr specs/egresses.md    # single-file mode
 
 - **No path** → the current directory in folder mode.
 - **A directory** → folder mode with a file tree on the left.
-- **A `.md` file** → single-file mode, just that document.
+- **A `.md` or `.json` file** → single-file mode, just that document.
 
 The browser opens automatically. Edit any markdown file and the view updates
 live.
@@ -48,6 +48,8 @@ live.
   it full screen with zoom (wheel or +/−) and drag-to-pan; close with ✕ or
   Esc.
 
+- **JSON files** — `.json` files appear in the tree and open as
+  syntax-highlighted source.
 - **Syntax highlighting** — powered by [Shiki](https://shiki.style). Common
   languages are bundled, plus the Filtrera grammar for ` ```filtrera ` blocks.
 - **In-app navigation** — relative `.md` links resolve and navigate without a

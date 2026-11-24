@@ -111,3 +111,16 @@ export async function renderMarkdown(source: string): Promise<string> {
   const instance = await getMarkdownIt();
   return instance.render(source);
 }
+
+/**
+ * Renders a non-markdown source file (e.g. `.json`) as one highlighted code
+ * block, using the same Shiki themes as markdown fences.
+ */
+export async function renderCode(source: string, lang: string): Promise<string> {
+  const highlighter = await getHighlighter();
+  return highlighter.codeToHtml(source, {
+    lang,
+    themes: { light: "github-light", dark: "github-dark" },
+    defaultColor: false,
+  });
+}

@@ -21,8 +21,8 @@ function resolveTarget() {
   }
 
   if (stats.isFile()) {
-    if (!target.toLowerCase().endsWith(".md")) {
-      console.error(`spec-reader: not a markdown file: ${target}`);
+    if (!/\.(md|json)$/i.test(target)) {
+      console.error(`spec-reader: not a markdown or JSON file:${target}`);
       process.exit(1);
     }
     return { target, mode: "file", contentRoot: dirname(target) };

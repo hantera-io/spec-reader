@@ -11,8 +11,9 @@ const IGNORED_DIRS = new Set([
   "obj",
 ]);
 
-function isMarkdown(name) {
-  return name.toLowerCase().endsWith(".md");
+function isSupported(name) {
+  const lower = name.toLowerCase();
+  return lower.endsWith(".md") || lower.endsWith(".json");
 }
 
 function toPosix(p) {
@@ -41,7 +42,7 @@ async function buildTree(dir, root) {
           children,
         });
       }
-    } else if (entry.isFile() && isMarkdown(entry.name)) {
+    } else if (entry.isFile() && isSupported(entry.name)) {
       const filePath = join(dir, entry.name);
       nodes.push({
         type: "file",
@@ -108,8 +109,8 @@ export function contentPlugin({ target, mode, contentRoot }) {
           }
 
           const stats = await stat(absolute);
-          if (!stats.isFile() || !isMarkdown(absolute)) {
-            sendJson(res, 404, { error: "Not a markdown file" });
+          if (!stats.isFile() || !isSupported(absolute)) {
+            sendJson(res, 404, { error: "Not a supported file" });
             return;
           }
 
@@ -130,7 +131,7 @@ export function contentPlugin({ target, mode, contentRoot }) {
       });
 
       const notify = (event, filePath) => {
-        if (!isMarkdown(filePath)) return;
+        if (!isSupported(filePath)) return;
         server.ws.send({
           type: "custom",
           event: "spec-reader:change",
