@@ -148,7 +148,7 @@ onMounted(async () => {
       <div class="content-inner">
         <div v-if="error" class="error-state">{{ error }}</div>
         <div v-else-if="!currentPath" class="empty-state">
-          No markdown files found.
+          No markdown or JSON files found.
         </div>
         <MarkdownView
           v-else

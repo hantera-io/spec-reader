@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
-import { renderMarkdown } from "../markdown";
+import { renderMarkdown, renderCode } from "../markdown";
 import { renderDiagram } from "../mermaid-runtime";
 import { theme } from "../theme";
 import DiagramLightbox from "./DiagramLightbox.vue";
@@ -119,7 +119,9 @@ async function renderMermaid() {
 }
 
 async function rerender() {
-  html.value = await renderMarkdown(props.source);
+  html.value = props.basePath.toLowerCase().endsWith(".json")
+    ? await renderCode(props.source, "json")
+    : await renderMarkdown(props.source);
   await nextTick();
   await renderMermaid();
   hydrateGrafiq();
@@ -127,7 +129,7 @@ async function rerender() {
 
 onMounted(rerender);
 onBeforeUnmount(() => grafiqResult?.destroy());
-watch(() => props.source, rerender);
+watch(() => [props.source, props.basePath], rerender);
 watch(theme, () => {
   renderMermaid();
   hydrateGrafiq();
